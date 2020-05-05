@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>SideWidget</class>
+ <widget class="QWidget" name="SideWidget">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>299</width>
+    <height>726</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>269</width>
+    <height>0</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>0</y>
+     <width>281</width>
+     <height>681</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Transformations</string>
+   </property>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>3</x>
+      <y>41</y>
+      <width>261</width>
+      <height>211</height>
+     </rect>
+    </property>
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Rotate around x</string>
+       </property>
+       <property name="buddy">
+        <cstring>rotate_x_slider</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QSlider" name="rotate_x_slider">
+       <property name="minimum">
+        <number>-180</number>
+       </property>
+       <property name="maximum">
+        <number>180</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Rotate around y</string>
+       </property>
+       <property name="buddy">
+        <cstring>rotate_y_slider</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSlider" name="rotate_y_slider">
+       <property name="minimum">
+        <number>-180</number>
+       </property>
+       <property name="maximum">
+        <number>180</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Rotate around z</string>
+       </property>
+       <property name="buddy">
+        <cstring>rotate_z_slider</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QSlider" name="rotate_z_slider">
+       <property name="minimum">
+        <number>-180</number>
+       </property>
+       <property name="maximum">
+        <number>180</number>
+       </property>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>Zoom factor</string>
+       </property>
+       <property name="buddy">
+        <cstring>zoom_factor_spin_box</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QDoubleSpinBox" name="zoom_factor_spin_box">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="decimals">
+        <number>5</number>
+       </property>
+       <property name="minimum">
+        <double>0.000100000000000</double>
+       </property>
+       <property name="maximum">
+        <double>10000.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Translate along x</string>
+       </property>
+       <property name="buddy">
+        <cstring>trans_x_spin_box</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QDoubleSpinBox" name="trans_x_spin_box">
+       <property name="minimum">
+        <double>-100.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Translate along y</string>
+       </property>
+       <property name="buddy">
+        <cstring>trans_y_spin_box</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QDoubleSpinBox" name="trans_y_spin_box">
+       <property name="minimum">
+        <double>-100.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_7">
+       <property name="text">
+        <string>Translate along z</string>
+       </property>
+       <property name="buddy">
+        <cstring>trans_z_spin_box</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QDoubleSpinBox" name="trans_z_spin_box">
+       <property name="minimum">
+        <double>-100.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>100.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>280</y>
+      <width>271</width>
+      <height>391</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="tab">
+     <attribute name="title">
+      <string>Cyclic</string>
+     </attribute>
+    </widget>
+    <widget class="QWidget" name="tab_curves">
+     <attribute name="title">
+      <string>Curves</string>
+     </attribute>
+     <widget class="QListWidget" name="listWidgetCurves">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>251</width>
+        <height>161</height>
+       </rect>
+      </property>
+      <property name="currentRow">
+       <number>-1</number>
+      </property>
+      <item>
+       <property name="text">
+        <string>Conical spiral</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Rose curve 1</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Rose curve 2</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Cycloid</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Nephroid</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Witch of Agnesi</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Fermat's spiral</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Lissajous knockoff</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QCheckBox" name="derivativecheck1">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>190</y>
+        <width>91</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Derivative 1</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="derivativecheck2">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>220</y>
+        <width>101</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Derivative 2</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_models">
+     <attribute name="title">
+      <string>Models</string>
+     </attribute>
+     <widget class="QListWidget" name="listWidgetModels">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>251</width>
+        <height>111</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>Angel</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Cone</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Cube</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Icosahedron</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QListWidget" name="materialsWidget">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>150</y>
+        <width>251</width>
+        <height>141</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>Brass</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Gold</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Silver</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Emerald</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Pearl</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Ruby</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Turqoise</string>
+       </property>
+      </item>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_surfaces">
+     <attribute name="title">
+      <string>Surfaces</string>
+     </attribute>
+     <widget class="QListWidget" name="listWidgetSurfaces">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>251</width>
+        <height>141</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>Klein Bottle</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Torus</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Boy's Surface</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Roman surface</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Sphere</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Conoid</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QComboBox" name="comboBoxLights">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>210</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>GL_LIGHT0</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>GL_LIGHT1</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>GL_LIGHT2</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>GL_LIGHT3</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>GL_LIGHT4</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>GL_LIGHT5</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>GL_LIGHT6</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>GL_LIGHT7</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QComboBox" name="comboBoxShaders">
+      <property name="geometry">
+       <rect>
+        <x>60</x>
+        <y>180</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>None</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Two sided lighting</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Directional light</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Toon</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>Reflection lines</string>
+       </property>
+      </item>
+     </widget>
+     <widget class="QLabel" name="label_8">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>180</y>
+        <width>55</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Shader:</string>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
