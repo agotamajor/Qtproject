@@ -48,6 +48,7 @@ namespace cagd
         connect(_side_widget->trans_x_spin_box, SIGNAL(valueChanged(double)), _gl_widget, SLOT(set_trans_x(double)));
         connect(_side_widget->trans_y_spin_box, SIGNAL(valueChanged(double)), _gl_widget, SLOT(set_trans_y(double)));
         connect(_side_widget->trans_z_spin_box, SIGNAL(valueChanged(double)), _gl_widget, SLOT(set_trans_z(double)));
+        connect(_side_widget->doubleSpinBoxAlpha, SIGNAL(valueChanged(double)), _gl_widget, SLOT(set_trans_alpha(double)));
 
         connect(_side_widget->tabWidget, SIGNAL(tabBarClicked(int)), _gl_widget, SLOT(set_selected_tab(int)));
         connect(_side_widget->listWidgetModels, SIGNAL(currentRowChanged(int)), _gl_widget, SLOT(set_selected_model(int)));

@@ -29,9 +29,7 @@ namespace cagd
     //--------------------------------
     GLWidget::GLWidget(QWidget *parent): QGLWidget(parent)
     {
-        _timer = new QTimer(this);
-        _timer->setInterval(0);
-        connect(_timer, SIGNAL(timeout()), this, SLOT(animate()));
+
     }
 
     //--------------------------------------------------------------------------------------
@@ -55,6 +53,7 @@ namespace cagd
         tab = 0;
         nrshader = 0;
         material = 0;
+        alpha = 1.0;
 
         gluPerspective(_fovy, _aspect, _z_near, _z_far);
 
@@ -95,6 +94,60 @@ namespace cagd
         loadModels();
         loadShaders();
 
+        // define the control net of the bicubic Bezier patch
+        _patch.SetData (0, 0, 2.0, 2.0, 0.0);
+        _patch.SetData (0, 1, 2.0, 1.0, 0.0);
+        _patch.SetData (0, 2, 2.0, 0.0, 0.0);
+        _patch.SetData (0, 3, 2.0, 2.0, 0.0);
+        _patch.SetData (1, 0, 0.0, -2.0, 0.0);
+        _patch.SetData (1, 1, 1.0, -1.0, 2.0);
+        _patch.SetData (1, 2, 1.0, 1.0, 2.0);
+        _patch.SetData (1, 3, 0.0, 2.0, 0.0);
+        _patch.SetData (2, 0, 1.0, -9.0, 0.0);
+        _patch.SetData (2, 1, 1.0, -1.0, 2.0);
+        _patch.SetData (2, 2, 1.0, 1.0, 2.0);
+        _patch.SetData (2, 3, 1.0, 2.0, 0.0);
+        _patch.SetData (3, 0, 2.0, -2.0, 0.0);
+        _patch.SetData (3, 1, 2.0, -1.0, 0.0);
+        _patch.SetData (3, 2, 2.0, 1.0, 0.0);
+        _patch.SetData (3, 3, 2.0, 2.0, 0.0);
+
+        // generate the mesh of the surface patch
+        _before_interpolation = _patch.GenerateImage (100, 100, GL_STATIC_DRAW);
+
+        if (_before_interpolation)
+            _before_interpolation->UpdateVertexBufferObjects();
+
+        // define an interpolation problem :
+        // 1: create a knot vector in u−direction
+
+        RowMatrix<GLdouble> u_knot_vector(4);
+        u_knot_vector(0) = 0.0;
+        u_knot_vector(1) = 1.0 / 3.0;
+        u_knot_vector(2) = 2.0 / 3.0;
+        u_knot_vector(3) = 1.0;
+
+        // 2: create a knot vector in v−direction
+        ColumnMatrix<GLdouble> v_knot_vector(4);
+        v_knot_vector(0) = 0.0;
+        v_knot_vector(1) = 1.0 / 3.0;
+        v_knot_vector(2) = 2.0 / 3.0;
+        v_knot_vector(3) = 1.0;
+        // 3: define a matrix of data points , e . g . set them to the o r i g i n a l control points
+        Matrix<DCoordinate3> data_points_to_interpolate (4, 4);
+        for (GLuint row = 0; row < 4; ++row)
+            for ( GLuint column = 0; column < 4; ++column)
+                _patch.GetData(row , column, data_points_to_interpolate (row, column));
+
+        // 4: solve the interpolation problem and generate the mesh of the interpolating patch
+        if (_patch.UpdateDataForInterpolation(u_knot_vector, v_knot_vector, data_points_to_interpolate))
+        {
+            _after_interpolation = _patch.GenerateImage (100, 100, GL_STATIC_DRAW);
+
+            if (_after_interpolation)
+                _after_interpolation->UpdateVertexBufferObjects();
+        }
+
         try
         {
             // initializing the OpenGL Extension Wrangler library
@@ -125,6 +178,57 @@ namespace cagd
 //   Initialization
 //----------------------------------------------------------------------------
 
+
+    void GLWidget::updateInterpolation()
+    {
+        _patch.setAlpha(alpha);
+
+        if (_before_interpolation)
+            _before_interpolation->DeleteVertexBufferObjects();
+
+        if (_after_interpolation)
+            _after_interpolation->DeleteVertexBufferObjects();
+
+        if(_before_interpolation)
+            delete _before_interpolation, _before_interpolation = 0;
+
+        if(_after_interpolation)
+            delete _after_interpolation, _after_interpolation = 0;
+
+        _before_interpolation = _patch.GenerateImage (40, 40, GL_STATIC_DRAW);
+
+        if (_before_interpolation)
+            _before_interpolation->UpdateVertexBufferObjects();
+
+        RowMatrix<GLdouble> u_knot_vector(4);
+        u_knot_vector(0) = 0.0;
+        u_knot_vector(1) = 1.0 / 3.0;
+        u_knot_vector(2) = 2.0 / 3.0;
+        u_knot_vector(3) = 1.0;
+
+        // 2: create a knot vector in v−direction
+        ColumnMatrix<GLdouble> v_knot_vector(4);
+        v_knot_vector(0) = 0.0;
+        v_knot_vector(1) = 1.0 / 3.0;
+        v_knot_vector(2) = 2.0 / 3.0;
+        v_knot_vector(3) = 1.0;
+        // 3: define a matrix of data points , e . g . set them to the o r i g i n a l control points
+        Matrix<DCoordinate3> data_points_to_interpolate (4, 4);
+        for (GLuint row = 0; row < 4; ++row)
+            for ( GLuint column = 0; column < 4; ++column)
+                _patch.GetData(row , column, data_points_to_interpolate (row, column));
+
+        // 4: solve the interpolation problem and generate the mesh of the interpolating patch
+        if (_patch.UpdateDataForInterpolation(u_knot_vector, v_knot_vector, data_points_to_interpolate))
+        {
+            _after_interpolation = _patch.GenerateImage (10, 10, GL_STATIC_DRAW);
+
+            if (_after_interpolation)
+                _after_interpolation->UpdateVertexBufferObjects();
+        }
+
+
+    }
 
     void GLWidget::loadCyclicCurves()
     {
@@ -199,12 +303,8 @@ namespace cagd
     }
 
     void GLWidget::loadModels(){
-        if(_angel.LoadFromOFF("Models/angel.off",true)){
-            if(_angel.UpdateVertexBufferObjects(GL_DYNAMIC_DRAW)){
-            _angle = 0.0;
-            _timer->start();
-            }
-        }
+        _angel.LoadFromOFF("Models/angel.off", true);
+        _angel.UpdateVertexBufferObjects(GL_DYNAMIC_DRAW);
 
         _cone.LoadFromOFF("Models/cone.off",true);
         _cone.UpdateVertexBufferObjects(GL_DYNAMIC_DRAW);
@@ -255,11 +355,35 @@ namespace cagd
         glRotatef(_angle_x, 1.0, 0.0, 0.0);
         glRotatef(_angle_y, 0.0, 1.0, 0.0);
         glRotatef(_angle_z, 0.0, 0.0, 1.0);
-        glTranslated(_trans_x, _trans_y, _trans_z);
+        glTranslated(_trans_x-3, _trans_y+2, _trans_z);
         glScaled(_zoom, _zoom, _zoom);
 
         switch(tab){
             case 0:
+          { glEnable(GL_LIGHTING);
+            glEnable(GL_NORMALIZE);
+            glEnable(GL_LIGHT0);
+            if (_before_interpolation)
+            {
+                MatFBRuby.Apply();
+                _before_interpolation->Render();
+            }
+            if (_after_interpolation)
+            {
+                glEnable(GL_BLEND);
+                glDepthMask(GL_FALSE);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+                MatFBTurquoise.Apply();
+                _after_interpolation->Render();
+                glDepthMask(GL_TRUE);
+                glDisable(GL_BLEND);
+            }
+            glDisable (GL_LIGHTING);
+            glDisable(GL_NORMALIZE);
+            glDisable(GL_LIGHT0);
+          }
+            break;
+            case 1:
                 paintCyclicCurves();
             break;
             default:
@@ -465,24 +589,6 @@ namespace cagd
         updateGL();
     }
 
-    void GLWidget::animate()
-    {
-        GLfloat *vertex=_angel.MapVertexBuffer(GL_READ_WRITE);
-        GLfloat *normal = _angel.MapNormalBuffer(GL_READ_ONLY);
-        _angle += DEG_TO_RADIAN;
-        if(_angle >= TWO_PI) _angle -= TWO_PI;
-
-        GLfloat scale = sin(_angle)/6000.0;
-        for(GLuint i = 0; i < _angel.VertexCount(); ++i)
-        {
-           for(GLuint coordinate = 0; coordinate < 3; ++coordinate , ++vertex , ++normal )
-                *vertex += scale * (*normal);
-        }
-        _angel.UnmapVertexBuffer();
-        _angel.UnmapNormalBuffer();
-         updateGL();
-    }
-
     //-----------------------------------
     // implementation of the public slots
     //-----------------------------------
@@ -550,6 +656,16 @@ namespace cagd
         }
     }
 
+    void GLWidget::set_trans_alpha(double value)
+    {
+        if (alpha != value)
+        {
+            alpha = value;
+            updateInterpolation();
+            updateGL();
+        }
+    }
+
     void GLWidget::set_selected_model(int index)
     {
         choice = index;
@@ -582,22 +698,6 @@ namespace cagd
 
     GLWidget ::~GLWidget()
     {
-        for(GLint i = 0; i < 8; i++){
-            delete _pc[i];
-            _pc[i] = nullptr;
-        }
-        if (_image_of_pc)
-            delete _image_of_pc, _image_of_pc = nullptr;
-
-        for(GLint i = 0; i < 8; i++){
-            delete _ps[i];
-            _ps[i] = nullptr;
-        }
-        for(GLint i = 0; i < 8; i++){
-            if (_image_of_ps[i])
-                delete _image_of_ps[i];
-                _image_of_ps[i] = nullptr;
-        }
 
         if(_cc[0])
         {
@@ -623,6 +723,11 @@ namespace cagd
             _image_of_cc[1] = nullptr;
         }
 
+        if(_before_interpolation)
+            delete _before_interpolation, _before_interpolation = 0;
+
+        if(_after_interpolation)
+            delete _after_interpolation, _after_interpolation = 0;
     }
 
 }

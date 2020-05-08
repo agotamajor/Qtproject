@@ -16,6 +16,7 @@
 #include "../Core/TriangulatedMeshes3.h"
 #include "../Cyclic/CyclicCurves3.h"
 #include "../Core/ShaderPrograms.h"
+#include "../Core/FirstOrderTrigonometricPatches3.h"
 
 namespace cagd
 {
@@ -45,6 +46,7 @@ namespace cagd
         int material;
         int light;
         int nrshader;
+        double alpha;
 
         CyclicCurve3* _cc[2];
         GenericCurve3* _image_of_cc[2];
@@ -54,8 +56,9 @@ namespace cagd
         //off
         QTimer *_timer;
         GLfloat _angle ;
-        TriangulatedMesh3 _angel, _sphere, _cube, _cone, _icosahedron;
-        TriangulatedMesh3 _mouse;
+        TriangulatedMesh3 _angel, _sphere, _cube, _cone, _icosahedron, _mouse;
+        TriangulatedMesh3 *_after_interpolation, *_before_interpolation;
+        FirstOrderTrigonometricPatches3 _patch;
 
     public:
         // special and default constructor
@@ -79,6 +82,7 @@ namespace cagd
         void set_trans_x(double value);
         void set_trans_y(double value);
         void set_trans_z(double value);
+        void set_trans_alpha(double value);
         void set_selected_tab(int index);
         void set_selected_model(int index);
         void set_selected_material(int index);
@@ -88,7 +92,7 @@ namespace cagd
         void loadCyclicCurves();
         void loadModels();
         void loadShaders();
-        void animate();
+        void updateInterpolation();
 
         void paintCyclicCurves();
         void paintModels();
