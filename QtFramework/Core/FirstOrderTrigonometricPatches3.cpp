@@ -3,11 +3,18 @@
 using namespace cagd ;
 
 // alpha - user-defined
-FirstOrderTrigonometricPatches3:: FirstOrderTrigonometricPatches3(GLdouble alpha):
-    TensorProductSurface3 (0.0, alpha, 0.0, alpha, 4, 4),
-    _alpha(alpha)
+FirstOrderTrigonometricPatches3:: FirstOrderTrigonometricPatches3():
+    TensorProductSurface3 (0.0, 1.0, 0.0, 1.0, 4, 4),
+    _alpha(1)
 {
 
+}
+
+void FirstOrderTrigonometricPatches3::setAlpha(GLdouble alpha)
+{
+    _alpha = alpha;
+    SetUInterval(0, alpha);
+    SetVInterval(0, alpha);
 }
 
 GLboolean FirstOrderTrigonometricPatches3:: UBlendingFunctionValues(
