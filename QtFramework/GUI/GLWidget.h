@@ -42,16 +42,11 @@ namespace cagd
 
         int choice;
         int tab;
-        int derivative1, derivative2, animation;
         int material;
         int light;
         int nrshader;
 
-        ParametricCurve3* _pc[8];
-        ParametricSurface3* _ps[6];
         CyclicCurve3* _cc[2];
-        GenericCurve3* _image_of_pc;
-        TriangulatedMesh3* _image_of_ps[6];
         GenericCurve3* _image_of_cc[2];
 
         ShaderProgram _shader_two_sided, _shader_directional, _shader_reflection, _shader_toon;
@@ -85,27 +80,18 @@ namespace cagd
         void set_trans_y(double value);
         void set_trans_z(double value);
         void set_selected_tab(int index);
-        void set_selected_curve(int index);
         void set_selected_model(int index);
-        void set_checked_box1(int state);
-        void set_checked_box2(int state);
-        void set_checked_box3(int state);
         void set_selected_material(int index);
-        void set_selected_surface(int index);
         void set_selected_light(int index);
         void set_selected_shader(int index);
 
-        void loadCurves();
         void loadCyclicCurves();
         void loadModels();
-        void loadSurfaces();
         void loadShaders();
         void animate();
 
-        void paintCurves();
         void paintCyclicCurves();
         void paintModels();
-        void paintSurfaces();
 
     private:
 

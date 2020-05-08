@@ -236,96 +236,6 @@
       <string>Cyclic</string>
      </attribute>
     </widget>
-    <widget class="QWidget" name="tab_curves">
-     <attribute name="title">
-      <string>Curves</string>
-     </attribute>
-     <widget class="QListWidget" name="listWidgetCurves">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>251</width>
-        <height>161</height>
-       </rect>
-      </property>
-      <property name="currentRow">
-       <number>-1</number>
-      </property>
-      <item>
-       <property name="text">
-        <string>Conical spiral</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Rose curve 1</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Rose curve 2</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Cycloid</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Nephroid</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Witch of Agnesi</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Fermat's spiral</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Lissajous knockoff</string>
-       </property>
-      </item>
-     </widget>
-     <widget class="QCheckBox" name="derivativecheck1">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>190</y>
-        <width>91</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Derivative 1</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="derivativecheck2">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>220</y>
-        <width>101</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Derivative 2</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </widget>
     <widget class="QWidget" name="tab_models">
      <attribute name="title">
       <string>Models</string>
@@ -336,7 +246,7 @@
         <x>10</x>
         <y>10</y>
         <width>251</width>
-        <height>111</height>
+        <height>91</height>
        </rect>
       </property>
       <item>
@@ -364,9 +274,9 @@
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>150</y>
+        <y>110</y>
         <width>251</width>
-        <height>141</height>
+        <height>81</height>
        </rect>
       </property>
       <item>
@@ -405,56 +315,11 @@
        </property>
       </item>
      </widget>
-    </widget>
-    <widget class="QWidget" name="tab_surfaces">
-     <attribute name="title">
-      <string>Surfaces</string>
-     </attribute>
-     <widget class="QListWidget" name="listWidgetSurfaces">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>251</width>
-        <height>141</height>
-       </rect>
-      </property>
-      <item>
-       <property name="text">
-        <string>Klein Bottle</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Torus</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Boy's Surface</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Roman surface</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Sphere</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Conoid</string>
-       </property>
-      </item>
-     </widget>
      <widget class="QComboBox" name="comboBoxLights">
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>210</y>
+        <y>240</y>
         <width>101</width>
         <height>22</height>
        </rect>
@@ -504,7 +369,7 @@
       <property name="geometry">
        <rect>
         <x>60</x>
-        <y>180</y>
+        <y>210</y>
         <width>101</width>
         <height>22</height>
        </rect>
@@ -535,11 +400,11 @@
        </property>
       </item>
      </widget>
-     <widget class="QLabel" name="label_8">
+     <widget class="QLabel" name="label_9">
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>180</y>
+        <y>210</y>
         <width>55</width>
         <height>16</height>
        </rect>

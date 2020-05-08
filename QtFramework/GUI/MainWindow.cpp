@@ -50,11 +50,7 @@ namespace cagd
         connect(_side_widget->trans_z_spin_box, SIGNAL(valueChanged(double)), _gl_widget, SLOT(set_trans_z(double)));
 
         connect(_side_widget->tabWidget, SIGNAL(tabBarClicked(int)), _gl_widget, SLOT(set_selected_tab(int)));
-        connect(_side_widget->listWidgetCurves, SIGNAL(currentRowChanged(int)), _gl_widget, SLOT(set_selected_curve(int)));
         connect(_side_widget->listWidgetModels, SIGNAL(currentRowChanged(int)), _gl_widget, SLOT(set_selected_model(int)));
-        connect(_side_widget->listWidgetSurfaces, SIGNAL(currentRowChanged(int)), _gl_widget, SLOT(set_selected_surface(int)));
-        connect(_side_widget->derivativecheck1, SIGNAL(stateChanged(int)), _gl_widget, SLOT(set_checked_box1(int)));
-        connect(_side_widget->derivativecheck2, SIGNAL(stateChanged(int)), _gl_widget, SLOT(set_checked_box2(int)));
         connect(_side_widget->materialsWidget, SIGNAL(currentRowChanged(int)), _gl_widget, SLOT(set_selected_material(int)));
         connect(_side_widget->comboBoxLights, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_selected_light(int)));
         connect(_side_widget->comboBoxShaders, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_selected_shader(int)));

@@ -55,9 +55,6 @@ namespace cagd
         tab = 0;
         nrshader = 0;
         material = 0;
-        derivative1 = 2;
-        derivative2 = 2;
-        animation = 0;
 
         gluPerspective(_fovy, _aspect, _z_near, _z_far);
 
@@ -94,10 +91,8 @@ namespace cagd
         glEnable(GL_DEPTH_TEST);
 
         glewInit();
-        loadCurves();
         loadCyclicCurves();
         loadModels();
-        loadSurfaces();
         loadShaders();
 
         try
@@ -130,62 +125,6 @@ namespace cagd
 //   Initialization
 //----------------------------------------------------------------------------
 
-    void GLWidget::loadCurves(){
-        RowMatrix<ParametricCurve3::Derivative> derivative(3);
-        for(GLint i = 0; i < 8; i++){
-            _pc[i] = nullptr;
-        }
-
-        derivative(0) = spiral_on_cone::d0;
-        derivative(1) = spiral_on_cone::d1;
-        derivative(2) = spiral_on_cone::d2;
-        _pc[0] = new (nothrow)ParametricCurve3(derivative, spiral_on_cone::u_min, spiral_on_cone::u_max);
-
-        derivative(0) = rose_curve1::d0;
-        derivative(1) = rose_curve1::d1;
-        derivative(2) = rose_curve1::d2;
-        _pc[1] = new (nothrow)ParametricCurve3(derivative, rose_curve1::u_min, rose_curve1::u_max);
-
-        derivative(0) = rose_curve2::d0;
-        derivative(1) = rose_curve2::d1;
-        derivative(2) = rose_curve2::d2;
-        _pc[2] = new (nothrow)ParametricCurve3(derivative, rose_curve2::u_min, rose_curve2::u_max);
-
-        derivative(0) = cycloid::d0;
-        derivative(1) = cycloid::d1;
-        derivative(2) = cycloid::d2;
-        _pc[3] = new (nothrow)ParametricCurve3(derivative, cycloid::u_min, cycloid::u_max);
-
-        derivative(0) = nephroid::d0;
-        derivative(1) = nephroid::d1;
-        derivative(2) = nephroid::d2;
-        _pc[4] = new (nothrow)ParametricCurve3(derivative, nephroid::u_min, nephroid::u_max);
-
-        derivative(0) = witch_of_agnesi::d0;
-        derivative(1) = witch_of_agnesi::d1;
-        derivative(2) = witch_of_agnesi::d2;
-        _pc[5] = new (nothrow)ParametricCurve3(derivative, witch_of_agnesi::u_min, witch_of_agnesi::u_max);
-
-        derivative(0) = fermat_spiral::d0;
-        derivative(1) = fermat_spiral::d1;
-        derivative(2) = fermat_spiral::d2;
-        _pc[6] = new (nothrow)ParametricCurve3(derivative, fermat_spiral::u_min, fermat_spiral::u_max);
-
-        derivative(0) = lissajous_knockoff::d0;
-        derivative(1) = lissajous_knockoff::d1;
-        derivative(2) = lissajous_knockoff::d2;
-        _pc[7] = new (nothrow)ParametricCurve3(derivative, lissajous_knockoff::u_min, lissajous_knockoff::u_max);
-
-        for(GLint i = 0; i < 8; i++){
-            if (!_pc[i])
-            {
-                // error : either close the application , or handle this exception
-                cout << "The generation of the parametric curve was unsuccessful" << std::endl;
-                return;
-
-            }
-        }
-    }
 
     void GLWidget::loadCyclicCurves()
     {
@@ -277,73 +216,6 @@ namespace cagd
         _icosahedron.UpdateVertexBufferObjects(GL_DYNAMIC_DRAW);
     }
 
-    void GLWidget::loadSurfaces(){
-
-        TriangularMatrix<ParametricSurface3::PartialDerivative> derivative(3);
-        for(GLint i = 0; i < 8; i++){
-            _ps[i] = nullptr;
-        }
-
-        derivative(0,0) = klein::d00;
-        derivative(1,1) = klein::d01;
-        derivative(1,0) = klein::d10;
-        _ps[0] = new (nothrow)ParametricSurface3(derivative, klein::u_min, klein::u_max, klein::v_min, klein::v_max);
-
-        derivative(0,0) = torus::d00;
-        derivative(1,1) = torus::d01;
-        derivative(1,0) = torus::d10;
-        _ps[1] = new (nothrow)ParametricSurface3(derivative, torus::u_min, torus::u_max, torus::v_min, torus::v_max);
-
-        derivative(0,0) = boy::d00;
-        derivative(1,1) = boy::d01;
-        derivative(1,0) = boy::d10;
-        _ps[2] = new (nothrow)ParametricSurface3(derivative, boy::u_min, boy::u_max, boy::v_min, boy::v_max);
-
-        derivative(0,0) = roman::d00;
-        derivative(1,1) = roman::d01;
-        derivative(1,0) = roman::d10;
-        _ps[3] = new (nothrow)ParametricSurface3(derivative, roman::u_min, roman::u_max, roman::v_min, roman::v_max);
-
-        derivative(0,0) = sphere::d00;
-        derivative(1,1) = sphere::d01;
-        derivative(1,0) = sphere::d10;
-        _ps[4] = new (nothrow)ParametricSurface3(derivative, sphere::u_min, sphere::u_max, sphere::v_min, sphere::v_max);
-
-        derivative(0,0) = conoid::d00;
-        derivative(1,1) = conoid::d01;
-        derivative(1,0) = conoid::d10;
-        _ps[5] = new (nothrow)ParametricSurface3(derivative, conoid::u_min, conoid::u_max, conoid::v_min, conoid::v_max);
-
-        for(GLint i = 0; i < 6; i++){
-            if (!_ps[i])
-            {
-                // error : either close the application , or handle this exception
-                cout << "The generation of the parametric surface was unsuccessful" << std::endl;
-                return;
-
-            }
-        }
-
-        GLuint div_point_count_u = 200;
-        GLuint div_point_count_v = 200;
-        GLenum usage_flag = GL_STATIC_DRAW;
-
-        for(GLint i = 0; i < 6; i++){
-            _image_of_ps[i] = nullptr;
-            _image_of_ps[i] = _ps[choice]->GenerateImage(div_point_count_u, div_point_count_v, usage_flag);
-            if(!_image_of_ps[i])
-            {
-                // error : either close the application , or handle this exception
-                cout << "The generation of the parametric surface was unsuccessful" << std::endl;
-                return;
-            }
-            if(!_image_of_ps[i]->UpdateVertexBufferObjects(usage_flag))
-            {
-                cout << "Could not create the vertex buffer object of the parametric curve !" << endl;
-                return;
-            }
-        }
-    }
 
     void GLWidget::loadShaders(){
         if (!_shader_two_sided.InstallShaders("Shaders/two_sided_lighting.vert ", "Shaders/two_sided_lighting.frag", GL_TRUE)) {
@@ -390,14 +262,8 @@ namespace cagd
             case 0:
                 paintCyclicCurves();
             break;
-            case 1:
-                paintCurves();
-            break;
-            case 2:
-                paintModels();
-            break;
             default:
-                paintSurfaces();
+                paintModels();
             break;
 
         }
@@ -410,54 +276,6 @@ namespace cagd
 //---------------------------------------------------------------------------
 //   Drawing
 //----------------------------------------------------------------------------
-    void GLWidget::paintCurves()
-    {
-        GLuint div_point_count = 200;
-        GLenum usage_flag = GL_STATIC_DRAW;
-
-        _image_of_pc = nullptr;
-        if(derivative1>0 && derivative2>0){
-             _image_of_pc = _pc[choice]->GenerateImage(div_point_count, usage_flag, 3);
-        }else{
-            if(derivative1==0 && derivative2==0){
-                _image_of_pc = _pc[choice]->GenerateImage(div_point_count, usage_flag, 2);
-            }else{
-
-                if(derivative1==0){
-                    _image_of_pc = _pc[choice]->GenerateImage(div_point_count, usage_flag, 0);
-                }
-
-                if(derivative2==0){
-                    _image_of_pc = _pc[choice]->GenerateImage(div_point_count, usage_flag, 1);
-                }
-            }
-        }
-        if(!_image_of_pc)
-        {
-             // error : either close the application , or handle this exception
-            cout << "The generation of the cyclic curve was unsuccessful" << std::endl;
-            return;
-        }
-
-         if(!_image_of_pc->UpdateVertexBufferObjects(usage_flag))
-         {
-            cout << "Could not create the vertex buffer object of the parametric curve !" << endl;
-            return;
-         }
-
-         if (_image_of_pc) {
-             glColor3f (1.0f, 0.972f, 0.239f);
-             _image_of_pc->RenderDerivatives(0, GL_LINE_STRIP);
-             glPointSize (5.0f);
-             glColor3f (1.0f, 0.517f, 0.239f);
-             _image_of_pc->RenderDerivatives(1, GL_LINES);
-             _image_of_pc->RenderDerivatives(1, GL_POINTS);
-             glColor3f (0.780f, 0.239f, 1.0f);
-             _image_of_pc->RenderDerivatives(2, GL_LINES);
-             _image_of_pc->RenderDerivatives(2, GL_POINTS);
-             glPointSize (1.0f);
-         }
-    }
 
     void GLWidget::paintCyclicCurves()
     {
@@ -492,57 +310,6 @@ namespace cagd
     }
 
     void GLWidget::paintModels()
-    {
-        glEnable(GL_LIGHTING);
-        glEnable(GL_NORMALIZE);
-        glEnable(GL_LIGHT0);
-
-        switch(material){
-            case 0:
-                MatFBBrass.Apply();
-                break;
-            case 1:
-                MatFBGold.Apply();
-                break;
-            case 2:
-                MatFBSilver.Apply();
-                break;
-            case 3:
-                MatFBEmerald.Apply();
-                break;
-            case 4:
-                MatFBPearl.Apply();
-                break;
-            case 5:
-                MatFBRuby.Apply();
-                break;
-            default:
-                MatFBTurquoise.Apply();
-                break;
-        }
-
-
-         switch(choice){
-             case 0:
-                 _angel.Render();
-                 break;
-             case 1:
-                 _cone.Render();
-                 break;
-             case 2:
-                _cube.Render();
-                break;
-             default:
-                _icosahedron.Render();
-                break;
-        }
-
-        glDisable (GL_LIGHTING);
-        glDisable(GL_NORMALIZE);
-        glDisable(GL_LIGHT0);
-    }
-
-    void GLWidget::paintSurfaces()
     {
         glEnable(GL_LIGHTING);
         glEnable(GL_NORMALIZE);
@@ -613,17 +380,51 @@ namespace cagd
             cerr << e << endl ;
         }
 
-        if(dl) {
-            dl->Enable();
-            MatFBTurquoise.Apply();
-            _image_of_ps[choice]->Render();
-            dl->Disable();
+        switch(material){
+            case 0:
+                MatFBBrass.Apply();
+                break;
+            case 1:
+                MatFBGold.Apply();
+                break;
+            case 2:
+                MatFBSilver.Apply();
+                break;
+            case 3:
+                MatFBEmerald.Apply();
+                break;
+            case 4:
+                MatFBPearl.Apply();
+                break;
+            case 5:
+                MatFBRuby.Apply();
+                break;
+            default:
+                MatFBTurquoise.Apply();
+                break;
         }
 
-        if (dl) {
-            delete dl;
-            dl = 0;
+         dl->Enable();
+         switch(choice){
+             case 0:
+                 _angel.Render();
+                 break;
+             case 1:
+                 _cone.Render();
+                 break;
+             case 2:
+                _cube.Render();
+                break;
+             default:
+                _icosahedron.Render();
+                break;
         }
+        dl->Disable();
+
+         if (dl) {
+             delete dl;
+             dl = 0;
+         }
 
         _shader_two_sided.Disable();
         _shader_directional.Disable();
@@ -749,19 +550,7 @@ namespace cagd
         }
     }
 
-    void GLWidget::set_selected_curve(int index)
-    {
-        choice = index;
-        updateGL();
-    }
-
     void GLWidget::set_selected_model(int index)
-    {
-        choice = index;
-        updateGL();
-    }
-
-    void GLWidget::set_selected_surface(int index)
     {
         choice = index;
         updateGL();
@@ -777,21 +566,6 @@ namespace cagd
     void GLWidget::set_selected_material(int index)
     {
         material = index;
-        updateGL();
-    }
-
-    void GLWidget::set_checked_box1(int state){
-        derivative1 = state;
-        updateGL();
-    }
-
-    void GLWidget::set_checked_box2(int state){
-        derivative2 = state;
-        updateGL();
-    }
-
-    void GLWidget::set_checked_box3(int state){
-        animation = state;
         updateGL();
     }
 
