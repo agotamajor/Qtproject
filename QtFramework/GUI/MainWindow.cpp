@@ -56,6 +56,12 @@ namespace cagd
         connect(_side_widget->comboBoxLights, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_selected_light(int)));
         connect(_side_widget->comboBoxShaders, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_selected_shader(int)));
 
+        connect(_side_widget->cb_cyclic, SIGNAL(currentIndexChanged(int)), _gl_widget, SLOT(set_curve(int)));
+        connect(_side_widget->cb_detivative1, SIGNAL(stateChanged(int)), _gl_widget, SLOT(set_d1(int)));
+        connect(_side_widget->cb_derivative2, SIGNAL(stateChanged(int)), _gl_widget, SLOT(set_d2(int)));
+        connect(_side_widget->sb_control_point, SIGNAL(valueChanged(int)), _gl_widget, SLOT(set_control_point_nr(int)));
+        connect(_side_widget->dsb_scaling, SIGNAL(valueChanged(double)), _gl_widget, SLOT(set_scale(double)));
+        connect(_side_widget->cb_control_points, SIGNAL(stateChanged(int)), _gl_widget, SLOT(set_control_point(int)));
     }
 
     //--------------------------------

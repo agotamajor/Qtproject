@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include <GL/glew.h>
 #include <QGLWidget>
 #include <QListWidget>
@@ -47,6 +46,12 @@ namespace cagd
         int light;
         int nrshader;
         double alpha;
+        double _scale_nr = 1.0;
+        int _curve = 0;
+        bool _d1 = false;
+        bool _d2 = false;
+        bool _control_point = false;
+        GLuint div_point_count = 100;
 
         CyclicCurve3* _cc[2];
         GenericCurve3* _image_of_cc[2];
@@ -94,8 +99,15 @@ namespace cagd
         void loadShaders();
         void updateInterpolation();
 
-        void paintCyclicCurves();
+        void paintCyclicCurves(int nr);
         void paintModels();
+
+        void set_d1(int value);
+        void set_d2(int value);
+        void set_scale(double value);
+        void set_control_point(int value);
+        void set_control_point_nr(int value);
+        void set_curve(int value);
 
     private:
 

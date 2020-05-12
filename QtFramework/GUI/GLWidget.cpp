@@ -355,7 +355,7 @@ namespace cagd
         glRotatef(_angle_x, 1.0, 0.0, 0.0);
         glRotatef(_angle_y, 0.0, 1.0, 0.0);
         glRotatef(_angle_z, 0.0, 0.0, 1.0);
-        glTranslated(_trans_x-3, _trans_y+2, _trans_z);
+        glTranslated(_trans_x, _trans_y, _trans_z);
         glScaled(_zoom, _zoom, _zoom);
 
         switch(tab){
@@ -384,9 +384,9 @@ namespace cagd
           }
             break;
             case 1:
-                paintCyclicCurves();
+                paintCyclicCurves(_curve);
             break;
-            default:
+            case 2:
                 paintModels();
             break;
 
@@ -401,34 +401,40 @@ namespace cagd
 //   Drawing
 //----------------------------------------------------------------------------
 
-    void GLWidget::paintCyclicCurves()
+    void GLWidget::paintCyclicCurves(int nr)
     {
         GLenum usage_flag = GL_STATIC_DRAW;
-        GLuint div_point_count = 200;
-        _image_of_cc[choice] = _cc[choice]->GenerateImage(2, div_point_count, usage_flag);
+        _image_of_cc[nr] = _cc[nr]->GenerateImage(2, div_point_count, usage_flag);
 
-        if(!_image_of_cc[choice])
+        if(!_image_of_cc[nr])
         {
             cout << "The generation of the cyclic curve was unsuccessful" << std::endl;
             return;
         }
 
-        if(!_image_of_cc[choice]->UpdateVertexBufferObjects())
+        if(!_image_of_cc[nr]->UpdateVertexBufferObjects(_scale_nr, usage_flag))
         {
             cout << "The update was unsuccessful" << std::endl;
             return;
         }
 
-        if (_image_of_cc[choice]) {
+        if (_image_of_cc[nr]) {
             glColor3f (1.0f, 0.972f, 0.239f);
-            _image_of_cc[choice]->RenderDerivatives(0, GL_LINE_STRIP);
+            _image_of_cc[nr]->RenderDerivatives(0, GL_LINE_STRIP);
             glPointSize (5.0f);
-            glColor3f (1.0f, 0.517f, 0.239f);
-            _image_of_cc[choice]->RenderDerivatives(1, GL_LINES);
-            _image_of_cc[choice]->RenderDerivatives(1, GL_POINTS);
-            glColor3f (0.780f, 0.239f, 1.0f);
-            _image_of_cc[choice]->RenderDerivatives(2, GL_LINES);
-            _image_of_cc[0]->RenderDerivatives(2, GL_POINTS);
+            if (_d1) {
+                glColor3f (1.0f, 0.517f, 0.239f);
+                _image_of_cc[nr]->RenderDerivatives(1, GL_LINES);
+                _image_of_cc[nr]->RenderDerivatives(1, GL_POINTS);
+            }
+            if (_control_point) {
+                _image_of_cc[nr]->RenderDerivatives(2, GL_POINTS);
+            }
+            if (_d2) {
+                glColor3f (0.780f, 0.239f, 1.0f);
+                _image_of_cc[nr]->RenderDerivatives(2, GL_LINES);
+                _image_of_cc[nr]->RenderDerivatives(2, GL_POINTS);
+            }
             glPointSize (1.0f);
         }
     }
@@ -693,6 +699,76 @@ namespace cagd
     void GLWidget::set_selected_shader(int index){
         nrshader = index;
         updateGL();
+    }
+
+
+    void GLWidget::set_d1(int value) 
+    {
+        if(value)
+        {
+            _d1 = true;
+        }
+        else
+        {
+            _d1 = false;
+        }
+        updateGL();
+    }
+
+   void GLWidget::set_d2(int value)
+   {
+        if(value)
+        {
+           _d2 = true;
+        }
+        else
+        {
+           _d2 = false;
+        }
+        updateGL();
+   }
+
+   void GLWidget::set_control_point(int value)
+   {
+         if(value)
+         {
+            _control_point = true;
+         }
+         else
+         {
+            _control_point = false;
+         }
+         updateGL();
+   }
+
+   void GLWidget::set_control_point_nr(int value)
+   {
+        if(div_point_count != (GLuint)value)
+        {
+             div_point_count = (GLuint)value;
+             updateGL();
+        }
+   }
+
+    void GLWidget::set_scale(double value)
+    {
+        if(_scale_nr != value)
+        {
+            _scale_nr = value;
+            _image_of_cc[_curve]->UpdateVertexBufferObjects(_scale_nr);
+            updateGL();
+        }
+
+    }
+
+    void GLWidget::set_curve(int value)
+    {
+        if(_curve != value)
+        {
+            _curve = value;
+            updateGL();
+        }
+
     }
 
 
