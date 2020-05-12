@@ -113,7 +113,7 @@ GLboolean GenericCurve3::RenderDerivatives(GLuint order, GLenum render_mode) con
     return GL_TRUE;
 }
 
-GLboolean GenericCurve3::UpdateVertexBufferObjects(GLenum usage_flag)
+GLboolean GenericCurve3::UpdateVertexBufferObjects(GLdouble scale, GLenum usage_flag)
 {
     if (usage_flag != GL_STREAM_DRAW  && usage_flag != GL_STREAM_READ  && usage_flag != GL_STREAM_COPY  &&
         usage_flag != GL_DYNAMIC_DRAW && usage_flag != GL_DYNAMIC_READ && usage_flag != GL_DYNAMIC_COPY &&
@@ -195,7 +195,7 @@ GLboolean GenericCurve3::UpdateVertexBufferObjects(GLenum usage_flag)
         for (GLuint i = 0; i < curve_point_count; ++i)
         {
             DCoordinate3 sum = _derivative(0, i);
-            sum += _derivative(d, i);
+            sum += _derivative(d, i) * scale;
 
             for (GLint j = 0; j < 3; ++j)
             {
