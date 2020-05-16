@@ -25,12 +25,12 @@ void FirstOrderTrigonometricPatches3::getAlpha(GLdouble alpha) const
 
 GLdouble FirstOrderTrigonometricPatches3::calculateF2(GLdouble t) const
 {
-    return ((_alpha-t+sin(_alpha-t)+sin(t)-sin(_alpha)+t*cos(_alpha)-_alpha*cos(t))*sin(_alpha))/((_alpha-sin(_alpha))*(2*sin(_alpha)-_alpha-_alpha*cos(_alpha)));
+    return ((_alpha+(-1)*t+sin(_alpha-t)+sin(t)-sin(_alpha)+t*cos(_alpha)+(-1)*_alpha*cos(t))*sin(_alpha))/((_alpha-sin(_alpha))*(2*sin(_alpha)-_alpha+(-1)*_alpha*cos(_alpha)));
 }
 
 GLdouble FirstOrderTrigonometricPatches3::calculateF2derivative(GLdouble t) const
 {
-    return (sin(_alpha)*(-cos(_alpha-t)+_alpha*sin(t)+cos(t)+cos(_alpha)-1))/((_alpha-sin(_alpha))*(2*sin(_alpha)-_alpha*cos(_alpha)));
+    return (sin(_alpha)*(-cos(t-_alpha)+_alpha*sin(t)+cos(t)+cos(_alpha)-1))/((_alpha-sin(_alpha))*(2*sin(_alpha)+(-1)*_alpha*cos(_alpha)-_alpha));
 }
 
 GLdouble FirstOrderTrigonometricPatches3::calculateF3(GLdouble t) const
@@ -50,7 +50,7 @@ GLdouble u_knot, RowMatrix<GLdouble>& blending_values) const
     if (u_knot < 0.0 || u_knot > _alpha)
             return GL_FALSE;
 
-    blending_values.ResizeColumns(4); //4x4-es matrix
+    blending_values.ResizeColumns(4);
 
     blending_values(0) = calculateF3(_alpha-u_knot);
     blending_values(1) = calculateF2(_alpha-u_knot);
@@ -65,7 +65,7 @@ GLboolean FirstOrderTrigonometricPatches3::VBlendingFunctionValues(GLdouble v_kn
     if (v_knot < 0.0 || v_knot > _alpha)
             return GL_FALSE;
 
-    blending_values.ResizeColumns(4); //4x4-es matrix
+    blending_values.ResizeColumns(4);
 
     blending_values(0) = calculateF3(_alpha-v_knot);
     blending_values(1) = calculateF2(_alpha-v_knot);
