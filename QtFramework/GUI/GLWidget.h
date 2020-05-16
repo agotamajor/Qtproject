@@ -117,7 +117,7 @@ namespace cagd
         void paintModels();
         void paintFOTPatch();
 
-//cyclic curve ------------------------------------
+//cyclic curve ----------------------------------------------
         void set_d1(int value);
         void set_d2(int value);
         void set_scale(double value);
@@ -125,7 +125,7 @@ namespace cagd
         void set_control_point_nr(int value);
         void set_curve(int value);
 
-//first order trigonometric surface 0------------------------
+//first order trigonometric surface ------------------------
         void set_selected_alpha(double value);
         void set_selected_patch(int index);
         void set_selected_point_row(int index);
