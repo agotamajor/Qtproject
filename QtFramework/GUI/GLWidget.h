@@ -15,7 +15,8 @@
 #include "../Core/TriangulatedMeshes3.h"
 #include "../Cyclic/CyclicCurves3.h"
 #include "../Core/ShaderPrograms.h"
-#include "../Core/FirstOrderTrigonometricPatches3.h"
+#include "../FirstOrderTrigonometricPatches3/FirstOrderTrigonometricPatches3.h"
+#include "../FirstOrderTrigonometricPatches3/CompositeFirstOrderTrigonometricPatches3.h"
 
 namespace cagd
 {
@@ -45,7 +46,9 @@ namespace cagd
         int material;
         int light;
         int nrshader;
-        double alpha;
+        ShaderProgram _shader_two_sided, _shader_directional, _shader_reflection, _shader_toon;
+
+// cyclic curve ----------------------------
         double _scale_nr = 1.0;
         int _curve = 0;
         bool _d1 = false;
@@ -56,12 +59,23 @@ namespace cagd
         CyclicCurve3* _cc[2];
         GenericCurve3* _image_of_cc[2];
 
-        ShaderProgram _shader_two_sided, _shader_directional, _shader_reflection, _shader_toon;
-
-        //off
+// models -----------------------------------
         QTimer *_timer;
         GLfloat _angle ;
         TriangulatedMesh3 _angel, _sphere, _cube, _cone, _icosahedron, _mouse;
+
+// projekt ----------------------------------
+        double alpha;
+        int selected_patch;
+        int selected_point_row;
+        int selected_point_column;
+        double point_x;
+        double point_y;
+        double point_z;
+        int normal_render;
+        GLenum _render_mode;
+
+        CompositeFirstOrderTrigonometricPatches3* _compsurface;
         TriangulatedMesh3 *_after_interpolation, *_before_interpolation;
         FirstOrderTrigonometricPatches3 _patch;
 
@@ -81,33 +95,45 @@ namespace cagd
         void set_angle_x(int value);
         void set_angle_y(int value);
         void set_angle_z(int value);
-
         void set_zoom_factor(double value);
-
         void set_trans_x(double value);
         void set_trans_y(double value);
         void set_trans_z(double value);
-        void set_trans_alpha(double value);
+
         void set_selected_tab(int index);
         void set_selected_model(int index);
         void set_selected_material(int index);
         void set_selected_light(int index);
         void set_selected_shader(int index);
 
+//definition, initialization --------------------------------
         void loadCyclicCurves();
         void loadModels();
         void loadShaders();
-        void updateInterpolation();
+        void loadFOTPatch();
 
+//drawing, rendering ----------------------------------------
         void paintCyclicCurves(int nr);
         void paintModels();
+        void paintFOTPatch();
 
+//cyclic curve ------------------------------------
         void set_d1(int value);
         void set_d2(int value);
         void set_scale(double value);
         void set_control_point(int value);
         void set_control_point_nr(int value);
         void set_curve(int value);
+
+//first order trigonometric surface 0------------------------
+        void set_selected_alpha(double value);
+        void set_selected_patch(int index);
+        void set_selected_point_row(int index);
+        void set_selected_point_column(int index);
+        void set_patch_point_x(double value);
+        void set_patch_point_y(double value);
+        void set_patch_point_z(double value);
+        void set_normal_render(int state);
 
     private:
 

@@ -16,6 +16,7 @@
 #include "../Core/Constants.h"
 #include "../Core/HCoordinates3.h"
 #include "../Core/Lights.h"
+#include "../FirstOrderTrigonometricPatches3/PatchConstants.h"
 
 
 using namespace std;
@@ -78,6 +79,11 @@ namespace cagd
         _trans_x = _trans_y = _trans_z = 0.0;
         _zoom = 1.0;
 
+        selected_patch = 0;
+        selected_point_row = 0;
+        selected_point_column = 0;
+        normal_render = 0;
+        _render_mode = GL_TRIANGLES;
         // initial values of choice
 
         glEnable(GL_POINT_SMOOTH);
@@ -93,60 +99,7 @@ namespace cagd
         loadCyclicCurves();
         loadModels();
         loadShaders();
-
-        // define the control net of the bicubic Bezier patch
-        _patch.SetData (0, 0, 2.0, 2.0, 0.0);
-        _patch.SetData (0, 1, 2.0, 1.0, 0.0);
-        _patch.SetData (0, 2, 2.0, 0.0, 0.0);
-        _patch.SetData (0, 3, 2.0, 2.0, 0.0);
-        _patch.SetData (1, 0, 0.0, -2.0, 0.0);
-        _patch.SetData (1, 1, 1.0, -1.0, 2.0);
-        _patch.SetData (1, 2, 1.0, 1.0, 2.0);
-        _patch.SetData (1, 3, 0.0, 2.0, 0.0);
-        _patch.SetData (2, 0, 1.0, -9.0, 0.0);
-        _patch.SetData (2, 1, 1.0, -1.0, 2.0);
-        _patch.SetData (2, 2, 1.0, 1.0, 2.0);
-        _patch.SetData (2, 3, 1.0, 2.0, 0.0);
-        _patch.SetData (3, 0, 2.0, -2.0, 0.0);
-        _patch.SetData (3, 1, 2.0, -1.0, 0.0);
-        _patch.SetData (3, 2, 2.0, 1.0, 0.0);
-        _patch.SetData (3, 3, 2.0, 2.0, 0.0);
-
-        // generate the mesh of the surface patch
-        _before_interpolation = _patch.GenerateImage (100, 100, GL_STATIC_DRAW);
-
-        if (_before_interpolation)
-            _before_interpolation->UpdateVertexBufferObjects();
-
-        // define an interpolation problem :
-        // 1: create a knot vector in u−direction
-
-        RowMatrix<GLdouble> u_knot_vector(4);
-        u_knot_vector(0) = 0.0;
-        u_knot_vector(1) = 1.0 / 3.0;
-        u_knot_vector(2) = 2.0 / 3.0;
-        u_knot_vector(3) = 1.0;
-
-        // 2: create a knot vector in v−direction
-        ColumnMatrix<GLdouble> v_knot_vector(4);
-        v_knot_vector(0) = 0.0;
-        v_knot_vector(1) = 1.0 / 3.0;
-        v_knot_vector(2) = 2.0 / 3.0;
-        v_knot_vector(3) = 1.0;
-        // 3: define a matrix of data points , e . g . set them to the o r i g i n a l control points
-        Matrix<DCoordinate3> data_points_to_interpolate (4, 4);
-        for (GLuint row = 0; row < 4; ++row)
-            for ( GLuint column = 0; column < 4; ++column)
-                _patch.GetData(row , column, data_points_to_interpolate (row, column));
-
-        // 4: solve the interpolation problem and generate the mesh of the interpolating patch
-        if (_patch.UpdateDataForInterpolation(u_knot_vector, v_knot_vector, data_points_to_interpolate))
-        {
-            _after_interpolation = _patch.GenerateImage (100, 100, GL_STATIC_DRAW);
-
-            if (_after_interpolation)
-                _after_interpolation->UpdateVertexBufferObjects();
-        }
+        loadFOTPatch();
 
         try
         {
@@ -178,57 +131,6 @@ namespace cagd
 //   Initialization
 //----------------------------------------------------------------------------
 
-
-    void GLWidget::updateInterpolation()
-    {
-        _patch.setAlpha(alpha);
-
-        if (_before_interpolation)
-            _before_interpolation->DeleteVertexBufferObjects();
-
-        if (_after_interpolation)
-            _after_interpolation->DeleteVertexBufferObjects();
-
-        if(_before_interpolation)
-            delete _before_interpolation, _before_interpolation = 0;
-
-        if(_after_interpolation)
-            delete _after_interpolation, _after_interpolation = 0;
-
-        _before_interpolation = _patch.GenerateImage (40, 40, GL_STATIC_DRAW);
-
-        if (_before_interpolation)
-            _before_interpolation->UpdateVertexBufferObjects();
-
-        RowMatrix<GLdouble> u_knot_vector(4);
-        u_knot_vector(0) = 0.0;
-        u_knot_vector(1) = 1.0 / 3.0;
-        u_knot_vector(2) = 2.0 / 3.0;
-        u_knot_vector(3) = 1.0;
-
-        // 2: create a knot vector in v−direction
-        ColumnMatrix<GLdouble> v_knot_vector(4);
-        v_knot_vector(0) = 0.0;
-        v_knot_vector(1) = 1.0 / 3.0;
-        v_knot_vector(2) = 2.0 / 3.0;
-        v_knot_vector(3) = 1.0;
-        // 3: define a matrix of data points , e . g . set them to the o r i g i n a l control points
-        Matrix<DCoordinate3> data_points_to_interpolate (4, 4);
-        for (GLuint row = 0; row < 4; ++row)
-            for ( GLuint column = 0; column < 4; ++column)
-                _patch.GetData(row , column, data_points_to_interpolate (row, column));
-
-        // 4: solve the interpolation problem and generate the mesh of the interpolating patch
-        if (_patch.UpdateDataForInterpolation(u_knot_vector, v_knot_vector, data_points_to_interpolate))
-        {
-            _after_interpolation = _patch.GenerateImage (10, 10, GL_STATIC_DRAW);
-
-            if (_after_interpolation)
-                _after_interpolation->UpdateVertexBufferObjects();
-        }
-
-
-    }
 
     void GLWidget::loadCyclicCurves()
     {
@@ -328,7 +230,7 @@ namespace cagd
              return;
         }
 
-        if (!_shader_directional.InstallShaders("Shaders/directional_ligh.vert ", "Shaders/directional_light.frag", GL_TRUE)) {
+        if (!_shader_directional.InstallShaders("Shaders/directional_light.vert ", "Shaders/directional_light.frag", GL_TRUE)) {
            cout<<"Shader error"<<std::endl;
            return;
         }
@@ -339,6 +241,30 @@ namespace cagd
         }
     }
 
+    void GLWidget::loadFOTPatch()
+    {
+        _compsurface = new CompositeFirstOrderTrigonometricPatches3(4,4);
+
+        _compsurface->InsertNewIsolatedPatch(alpha, -0.5, 0.5, -0.5, 0.5, 0.0, 0.0, 10, 100, 10, 100);
+        _compsurface->UpdateVertexBufferObject();
+
+        _compsurface->AddNeighbouringPatch(alpha, 0, LEFT);
+//        _compsurface->AddNeighbouringPatch(0,RIGHT);
+//        _compsurface->AddNeighbouringPatch(0,BOTTOM);
+//        _compsurface->AddNeighbouringPatch(0,LEFT);
+
+//        _compsurface->AddNeighbouringPatch(1,RIGHT);
+//        _compsurface->AddNeighbouringPatch(2,BOTTOM);
+//        _compsurface->AddNeighbouringPatch(4,BOTTOM);
+//        _compsurface->AddNeighbouringPatch(1,LEFT);
+
+       _compsurface->setMaterial(0, &MatFBGold);
+//       _compsurface->setMaterial(1, &MatFBBrass);
+//       _compsurface->setMaterial(2, &MatFBRuby);
+//       _compsurface->setMaterial(3, &MatFBTurquoise);
+//       _compsurface->setMaterial(4, &MatFBSilver);
+       //_compsurface->Update();
+    }
 
     //-----------------------
     // the rendering function
@@ -355,33 +281,12 @@ namespace cagd
         glRotatef(_angle_x, 1.0, 0.0, 0.0);
         glRotatef(_angle_y, 0.0, 1.0, 0.0);
         glRotatef(_angle_z, 0.0, 0.0, 1.0);
-        glTranslated(_trans_x, _trans_y, _trans_z);
-        glScaled(_zoom, _zoom, _zoom);
+        glTranslated(_trans_x+2, _trans_y, _trans_z);
+        glScaled(_zoom*0.3, _zoom*0.3, _zoom*0.3);
 
         switch(tab){
             case 0:
-          { glEnable(GL_LIGHTING);
-            glEnable(GL_NORMALIZE);
-            glEnable(GL_LIGHT0);
-            if (_before_interpolation)
-            {
-                MatFBRuby.Apply();
-                _before_interpolation->Render();
-            }
-            if (_after_interpolation)
-            {
-                glEnable(GL_BLEND);
-                glDepthMask(GL_FALSE);
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-                MatFBTurquoise.Apply();
-                _after_interpolation->Render();
-                glDepthMask(GL_TRUE);
-                glDisable(GL_BLEND);
-            }
-            glDisable (GL_LIGHTING);
-            glDisable(GL_NORMALIZE);
-            glDisable(GL_LIGHT0);
-          }
+                paintFOTPatch();
             break;
             case 1:
                 paintCyclicCurves(_curve);
@@ -534,7 +439,7 @@ namespace cagd
                 break;
         }
 
-         dl->Enable();
+         //dl->Enable();
          switch(choice){
              case 0:
                  _angel.Render();
@@ -549,17 +454,17 @@ namespace cagd
                 _icosahedron.Render();
                 break;
         }
-        dl->Disable();
+//        dl->Disable();
 
-         if (dl) {
-             delete dl;
-             dl = 0;
-         }
+//         if (dl) {
+//             delete dl;
+//             dl = 0;
+//         }
 
-        _shader_two_sided.Disable();
-        _shader_directional.Disable();
-        _shader_toon.Disable();
-        _shader_reflection.Disable();
+//        _shader_two_sided.Disable();
+//        _shader_directional.Disable();
+//        _shader_toon.Disable();
+//        _shader_reflection.Disable();
         glDisable (GL_LIGHTING);
         glDisable(GL_NORMALIZE);
         glDisable(GL_LIGHT0);
@@ -570,6 +475,19 @@ namespace cagd
         glDisable(GL_LIGHT5);
         glDisable(GL_LIGHT6);
         glDisable(GL_LIGHT7);
+    }
+
+    void GLWidget::paintFOTPatch()
+    {
+        glEnable(GL_LIGHTING);
+        glEnable(GL_NORMALIZE);
+        glEnable(GL_LIGHT0);
+
+        _compsurface->Render(normal_render);
+
+        glDisable (GL_LIGHTING);
+        glDisable(GL_NORMALIZE);
+        glDisable(GL_LIGHT0);
     }
 
     //----------------------------------------------------------------------------
@@ -662,16 +580,6 @@ namespace cagd
         }
     }
 
-    void GLWidget::set_trans_alpha(double value)
-    {
-        if (alpha != value)
-        {
-            alpha = value;
-            updateInterpolation();
-            updateGL();
-        }
-    }
-
     void GLWidget::set_selected_model(int index)
     {
         choice = index;
@@ -702,7 +610,8 @@ namespace cagd
     }
 
 
-    void GLWidget::set_d1(int value) 
+//cyclic curve --------------------------------
+    void GLWidget::set_d1(int value)
     {
         if(value)
         {
@@ -771,6 +680,75 @@ namespace cagd
 
     }
 
+//first order trigonometric patch -------------------------
+
+    void GLWidget::set_selected_alpha(double value)
+    {
+        if (alpha != value)
+        {
+            alpha = value;
+            delete _compsurface;
+            _compsurface = 0;
+            loadFOTPatch();
+            updateGL();
+        }
+    }
+
+    void GLWidget::set_selected_patch(int index)
+    {
+        selected_patch = index;
+    }
+
+    void GLWidget::set_selected_point_row(int index)
+    {
+        selected_point_row = index;
+    }
+
+    void GLWidget::set_selected_point_column(int index)
+    {
+        selected_point_column = index;
+    }
+
+    void GLWidget::set_patch_point_x(double value)
+    {
+        point_x = value;
+
+        FirstOrderTrigonometricPatches3* p = _compsurface->_patches[selected_patch]._patch;
+        (*p)(selected_point_row, selected_point_column)[0] = point_x;
+        _compsurface->Update();
+        _compsurface->UpdateVertexBufferObject();
+        updateGL();
+
+    }
+
+    void GLWidget::set_patch_point_y(double value)
+    {
+        point_y = value;
+
+        FirstOrderTrigonometricPatches3* p = _compsurface->_patches[selected_patch]._patch;
+        (*p)(selected_point_row, selected_point_column)[1] = point_y;
+        _compsurface->Update();
+        _compsurface->UpdateVertexBufferObject();
+        updateGL();
+    }
+
+    void GLWidget::set_patch_point_z(double value)
+    {
+        point_z = value;
+
+        FirstOrderTrigonometricPatches3* p = _compsurface->_patches[selected_patch]._patch;
+        (*p)(selected_point_row, selected_point_column)[2] = point_z;
+        _compsurface->Update();
+        _compsurface->UpdateVertexBufferObject();
+        updateGL();
+    }
+
+    void GLWidget::set_normal_render(int state)
+    {
+        normal_render = state;
+        updateGL();
+    }
+
 
     GLWidget ::~GLWidget()
     {
@@ -800,10 +778,22 @@ namespace cagd
         }
 
         if(_before_interpolation)
-            delete _before_interpolation, _before_interpolation = 0;
+        {
+            delete _before_interpolation;
+            _before_interpolation = 0;
+        }
 
         if(_after_interpolation)
-            delete _after_interpolation, _after_interpolation = 0;
+        {
+            delete _after_interpolation;
+            _after_interpolation = 0;
+        }
+
+        if(_compsurface)
+        {
+            delete _compsurface;
+            _compsurface = 0;
+        }
     }
 
 }
