@@ -1,12 +1,14 @@
 #include "TensorProductSurfaces3.h"
 #include "RealSquareMatrices.h"
-#include <algorithm>
 
 using namespace cagd;
 using namespace std;
 
+TensorProductSurface3::PartialDerivatives::PartialDerivatives(GLuint maximum_order_of_derivatives):
+        TriangularMatrix<DCoordinate3>(maximum_order_of_derivatives+1)
+{
+}
 
-// homework: initializes all partial derivatives to the origin
 GLvoid TensorProductSurface3::PartialDerivatives::LoadNullVectors()
 {
     for (GLuint i = 0; i < _data.size(); ++i)
@@ -18,6 +20,8 @@ GLvoid TensorProductSurface3::PartialDerivatives::LoadNullVectors()
         }
     }
 }
+
+
 
 //homework
 TensorProductSurface3::TensorProductSurface3(
@@ -55,32 +59,6 @@ TensorProductSurface3::TensorProductSurface3(const TensorProductSurface3& surfac
     }
 }
 
-
-//homework
-TensorProductSurface3& TensorProductSurface3::operator =(const TensorProductSurface3& surface)
-{
-    if (this != &surface)
-    {
-        DeleteVertexBufferObjectsOfData();
-        _u_closed = surface._u_closed;
-        _v_closed = surface._v_closed;
-        _u_min = surface._u_min;
-        _u_max = surface._u_max;
-        _v_min = surface._v_min;
-        _v_max = surface._v_max;
-        _data = surface._data;
-
-        if(surface._vbo_data)
-        {
-            UpdateVertexBufferObjectsOfData();
-        }
-    }
-
-    return *this;
-}
-
-
-// homework: set/get the definition domain of the surface
 GLvoid TensorProductSurface3::SetUInterval(GLdouble u_min, GLdouble u_max)
 {
     _u_min = u_min;
@@ -98,76 +76,69 @@ GLvoid TensorProductSurface3::GetUInterval(GLdouble& u_min, GLdouble& u_max) con
     u_min = _u_min;
     u_max = _u_max;
 }
-
 GLvoid TensorProductSurface3::GetVInterval(GLdouble& v_min, GLdouble& v_max) const
 {
     v_min = _v_min;
     v_max = _v_max;
 }
 
-// homework: set coordinates of a selected data point
 GLboolean TensorProductSurface3::SetData(GLuint row, GLuint column, GLdouble x, GLdouble y, GLdouble z)
 {
-    if (row >= _data.GetRowCount() || column >= _data.GetColumnCount())
-        return GL_FALSE;
-
-    _data(row, column)[0] = x;
-    _data(row, column)[1] = y;
-    _data(row, column)[2] = z;
-
-    return GL_TRUE;
+    if(row >= 0 && row < _data.GetRowCount() && column >= 0 && column < _data.GetColumnCount())
+    {
+        _data(row, column) = DCoordinate3(x, y, z);
+        return GL_TRUE;
+    }
+    return GL_FALSE;
 }
 
 GLboolean TensorProductSurface3::SetData(GLuint row, GLuint column, const DCoordinate3& point)
 {
-    if (row >= _data.GetRowCount() || column >= _data.GetColumnCount())
-        return GL_FALSE;
-
-    _data(row, column) = point;
-    return GL_TRUE;
+    if(row >= 0 && row < _data.GetRowCount() && column >= 0 && column < _data.GetColumnCount())
+    {
+        _data(row, column) = point;
+        return GL_TRUE;
+    }
+    return GL_FALSE;
 }
 
 // homework: get coordinates of a selected data point
-GLboolean TensorProductSurface3::GetData(GLuint row, GLuint column, GLdouble& x, GLdouble& y, GLdouble& z) const
+GLboolean TensorProductSurface3::GetData(
+        GLuint row, GLuint column,
+        GLdouble& x, GLdouble& y, GLdouble& z) const
 {
-    if (row >= _data.GetRowCount() || column >= _data.GetColumnCount())
-        return GL_FALSE;
-
-    x = _data(row, column)[0];
-    y = _data(row, column)[1];
-    z = _data(row, column)[2];
-    return GL_TRUE;
+    if(row >= 0 && row < _data.GetRowCount() && column >= 0 && column < _data.GetColumnCount())
+    {
+        DCoordinate3 coord = _data(row, column);
+        x = coord.x();
+        y = coord.y();
+        z = coord.z();
+        return GL_TRUE;
+    }
+    return GL_FALSE;
 }
 
 GLboolean TensorProductSurface3::GetData(GLuint row, GLuint column, DCoordinate3& point) const
 {
-    if (row >= _data.GetRowCount() || column >= _data.GetColumnCount())
-        return GL_FALSE;
-
-    point = _data(row, column);
-    return GL_TRUE;
+    if(row >= 0 && row < _data.GetRowCount() && column >= 0 && column < _data.GetColumnCount())
+    {
+        point = _data(row, column);
+        return GL_TRUE;
+    }
+    return GL_FALSE;
 }
 
-// homework: get data by value
 DCoordinate3 TensorProductSurface3::operator ()(GLuint row, GLuint column) const
 {
     return _data(row, column);
 }
 
-// homework: get data by reference
 DCoordinate3& TensorProductSurface3::operator ()(GLuint row, GLuint column)
 {
     return _data(row, column);
 }
 
-// special constructor
-TensorProductSurface3::PartialDerivatives::PartialDerivatives(GLuint maximum_order_of_partial_derivatives):
-        TriangularMatrix<DCoordinate3>(maximum_order_of_partial_derivatives + 1)
-{
-}
-
-// generates the image (i.e., the approximating triangulated mesh) of the tensor product surface
-TriangulatedMesh3* TensorProductSurface3::GenerateImage(GLuint u_div_point_count, GLuint v_div_point_count, GLenum usage_flag) const
+TriangulatedMesh3* TensorProductSurface3::GenerateImage(GLuint maximum_order_of_derivatives, GLuint u_div_point_count, GLuint v_div_point_count, GLenum usage_flag) const
 {
     if (u_div_point_count <= 1 || v_div_point_count <= 1)
         return GL_FALSE;
@@ -178,11 +149,11 @@ TriangulatedMesh3* TensorProductSurface3::GenerateImage(GLuint u_div_point_count
     // calculating number of triangular faces
     GLuint face_count = 2 * (u_div_point_count - 1) * (v_div_point_count - 1);
 
-    TriangulatedMesh3 *result = nullptr;
+    TriangulatedMesh3 *result = 0;
     result = new TriangulatedMesh3(vertex_count, face_count, usage_flag);
 
     if (!result)
-        return nullptr;
+        return 0;
 
     // uniform subdivision grid in the definition domain
     GLdouble du = (_u_max - _u_min) / (u_div_point_count - 1);
@@ -200,12 +171,12 @@ TriangulatedMesh3* TensorProductSurface3::GenerateImage(GLuint u_div_point_count
 
     for (GLuint i = 0; i < u_div_point_count; ++i)
     {
-		GLdouble u = min(_u_min + i * du, _u_max);
-		GLfloat  s = min(i * sdu, 1.0f);
+        GLdouble u = _u_min + i * du;
+        GLfloat  s = i * sdu;
         for (GLuint j = 0; j < v_div_point_count; ++j)
         {
-			GLdouble v = min(_v_min + j * dv, _v_max);
-			GLfloat  t = min(j * tdv, 1.0f);
+            GLdouble v = _v_min + j * dv;
+            GLfloat  t = j * tdv;
 
             /*
                 3-2
@@ -220,7 +191,7 @@ TriangulatedMesh3* TensorProductSurface3::GenerateImage(GLuint u_div_point_count
             index[3] = index[2] - 1;
 
             // calculating all needed surface data
-            CalculatePartialDerivatives(1, u, v, pd);
+            CalculatePartialDerivatives(maximum_order_of_derivatives, u, v, pd);
 
             // surface point
             (*result)._vertex[index[0]] = pd(0, 0);
@@ -253,7 +224,6 @@ TriangulatedMesh3* TensorProductSurface3::GenerateImage(GLuint u_div_point_count
     return result;
 }
 
-// ensures interpolation, i.e. s(u_i, v_j) = d_{i,j}
 GLboolean TensorProductSurface3::UpdateDataForInterpolation(const RowMatrix<GLdouble>& u_knot_vector, const ColumnMatrix<GLdouble>& v_knot_vector, Matrix<DCoordinate3>& data_points_to_interpolate)
 {
     GLuint row_count = _data.GetRowCount();
@@ -325,163 +295,160 @@ GLboolean TensorProductSurface3::UpdateDataForInterpolation(const RowMatrix<GLdo
     return GL_TRUE;
 }
 
-GLvoid TensorProductSurface3::DeleteVertexBufferObjectsOfData()
+void TensorProductSurface3::DeleteVertexBufferObjectsOfData()
 {
-    if(_vbo_data)
+    if (_vbo_data)
     {
         glDeleteBuffers(1, &_vbo_data);
         _vbo_data = 0;
     }
 }
 
+GLboolean TensorProductSurface3::UpdateVertexBufferObjectsOfData(GLenum usage_flag)
+{
+    GLuint row_count = _data.GetRowCount();
+        GLuint column_count = _data.GetColumnCount();
+
+        if (!row_count || !column_count)
+            return GL_FALSE;
+
+        if (usage_flag != GL_STREAM_DRAW  && usage_flag != GL_STREAM_READ  && usage_flag != GL_STREAM_COPY
+         && usage_flag != GL_DYNAMIC_DRAW && usage_flag != GL_DYNAMIC_READ && usage_flag != GL_DYNAMIC_COPY
+         && usage_flag != GL_STATIC_DRAW  && usage_flag != GL_STATIC_READ  && usage_flag != GL_STATIC_COPY)
+            return GL_FALSE;
+
+        DeleteVertexBufferObjectsOfData();
+
+        glGenBuffers(1, &_vbo_data);
+        if (!_vbo_data)
+            return GL_FALSE;
+
+        glBindBuffer(GL_ARRAY_BUFFER, _vbo_data);
+        glBufferData(GL_ARRAY_BUFFER, row_count * column_count * 3 * sizeof(GLfloat), 0, usage_flag);
+
+        GLfloat *coordinate = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+        if (!coordinate)
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            DeleteVertexBufferObjectsOfData();
+            return GL_FALSE;
+        }
+
+        for (GLuint i = 0; i < row_count; ++i)
+        {
+            for (GLuint j = 0; j < column_count; ++j)
+            {
+                for (GLuint c = 0; c < 3; ++c)
+                {
+                    *coordinate = (GLfloat)_data(i, j)[c];
+                    ++coordinate;
+                }
+            }
+        }
+
+        if (!glUnmapBuffer(GL_ARRAY_BUFFER))
+        {
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            DeleteVertexBufferObjectsOfData();
+            return GL_FALSE;
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        return GL_TRUE;
+}
+
+
 GLboolean TensorProductSurface3::RenderData(GLenum render_mode) const
 {
     if (!_vbo_data)
         return GL_FALSE;
 
-    if (render_mode != GL_LINE_STRIP && render_mode != GL_LINE_LOOP && render_mode != GL_POINTS)
+    if (render_mode != GL_LINE_STRIP && render_mode != GL_POINTS && render_mode != GL_LINE_LOOP && !_u_closed && !_v_closed)
         return GL_FALSE;
 
     glEnableClientState(GL_VERTEX_ARRAY);
         glBindBuffer(GL_ARRAY_BUFFER, _vbo_data);
-            glVertexPointer(3, GL_FLOAT, 0, (const GLvoid*)0);
-            glDrawArrays(render_mode, 0, 3 * _data.GetRowCount() * _data.GetColumnCount());
+           glVertexPointer(3, GL_FLOAT, 0, (const GLvoid*)0);
+           glDrawArrays(render_mode, 0, 3 * _data.GetRowCount() * _data.GetColumnCount());
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisableClientState(GL_VERTEX_ARRAY);
 
     return GL_TRUE;
 }
 
-GLboolean TensorProductSurface3::UpdateVertexBufferObjectsOfData(GLenum usage_flag)
+RowMatrix<GenericCurve3*>* TensorProductSurface3::GenerateUIsoparametricLines(GLuint maximum_order_of_derivatives, GLuint iso_line_count, GLuint div_point_count, GLenum usage_flag) const
 {
-    GLuint row_count = _data.GetRowCount();
-    GLuint column_count = _data.GetColumnCount();
+    GLdouble v_step = (_v_max - _v_min) / (iso_line_count - 1);
+    GLdouble u_step = (_u_max - _u_min) / (div_point_count - 1);
 
-    if (!row_count || !column_count)
-        return GL_FALSE;
-
-    if (usage_flag != GL_STREAM_DRAW  && usage_flag != GL_STREAM_READ  && usage_flag != GL_STREAM_COPY
-     && usage_flag != GL_DYNAMIC_DRAW && usage_flag != GL_DYNAMIC_READ && usage_flag != GL_DYNAMIC_COPY
-     && usage_flag != GL_STATIC_DRAW  && usage_flag != GL_STATIC_READ  && usage_flag != GL_STATIC_COPY)
-        return GL_FALSE;
-
-    DeleteVertexBufferObjectsOfData();
-
-    glGenBuffers(1, &_vbo_data);
-    if (!_vbo_data)
-        return GL_FALSE;
-
-    glBindBuffer(GL_ARRAY_BUFFER, _vbo_data);
-    glBufferData(GL_ARRAY_BUFFER, row_count * column_count * 3 * sizeof(GLfloat), 0, usage_flag);
-
-    GLfloat *coordinate = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-    if (!coordinate)
-    {
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        DeleteVertexBufferObjectsOfData();
-        return GL_FALSE;
-    }
-
-    for (GLuint i = 0; i < row_count; ++i)
-    {
-        for (GLuint j = 0; j < column_count; ++j)
-        {
-            for (GLuint c = 0; c < 3; ++c)
-            {
-                *coordinate = (GLfloat)_data(i, j)[c];
-                ++coordinate;
-            }
-        }
-    }
-
-    if (!glUnmapBuffer(GL_ARRAY_BUFFER))
-    {
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        DeleteVertexBufferObjectsOfData();
-        return GL_FALSE;
-    }
-
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    return GL_TRUE;
-}
-
-// homework: generate u-directional isoparametric lines
-RowMatrix<GenericCurve3*>* TensorProductSurface3::GenerateUIsoparametricLines(GLuint iso_line_count,
-                                                      GLuint maximum_order_of_derivatives,
-                                                      GLuint div_point_count,
-                                                      GLenum usage_flag) const
-{
     RowMatrix<GenericCurve3*> *result = new RowMatrix<GenericCurve3*>(iso_line_count);
     if (!result)
     {
-        return nullptr;
+       return nullptr;
     }
-    GLdouble v_step = (_v_max - _v_min) / (div_point_count - 1);
-    GLdouble v = _v_min - v_step;
-    for (GLuint j = 0; j < iso_line_count; j++)
+
+    GLdouble v =  _v_min;
+    GLdouble u =  _u_min;
+
+    for (GLuint i = 0; i < iso_line_count; i++)
     {
-        v += v_step;
-        (*result)[j] = new GenericCurve3(maximum_order_of_derivatives, div_point_count, usage_flag);
-        GLdouble u_step = (_u_max - _u_min) / (div_point_count - 1);
-        GLdouble u = _u_min - u_step;
-        for (GLuint i = 0; i < div_point_count; i++)
+         v += v_step;
+        (*result)[i] = new GenericCurve3(1, div_point_count, usage_flag);
+
+        for (GLuint j = 0; j < div_point_count; j++)
         {
             u += u_step;
-            PartialDerivatives pd;
-            if (!CalculatePartialDerivatives(maximum_order_of_derivatives, u, v, pd))
-            {
-                delete result;
-                return nullptr;
-            }
+            PartialDerivatives pd(maximum_order_of_derivatives);
+
+            CalculatePartialDerivatives(maximum_order_of_derivatives, u, v, pd);
+
             for (GLuint d = 0; d <= maximum_order_of_derivatives; d++)
             {
-                (*(*result)[j])(d, i) = pd(d, 0);
+                (*(*result)[i])(d, j) = pd(d, 0);
             }
         }
     }
+
     return result;
 }
 
-// homework: generate v-directional isoparametric lines
-RowMatrix<GenericCurve3*>* TensorProductSurface3::GenerateVIsoparametricLines(GLuint iso_line_count,
-                                                      GLuint maximum_order_of_derivatives,
-                                                      GLuint div_point_count,
-                                                      GLenum usage_flag) const
+RowMatrix<GenericCurve3*>* TensorProductSurface3::GenerateVIsoparametricLines(GLuint maximum_order_of_derivatives, GLuint iso_line_count, GLuint div_point_count, GLenum usage_flag) const
 {
+    GLdouble v_step = (_v_max - _v_min) / (div_point_count - 1);
+    GLdouble u_step = (_u_max - _u_min) / (iso_line_count - 1);
+
     RowMatrix<GenericCurve3*> *result = new RowMatrix<GenericCurve3*>(iso_line_count);
     if (!result)
     {
-        return nullptr;
+       return nullptr;
     }
-    GLdouble u_step = (_u_max - _u_min) / (div_point_count - 1);
-    GLdouble u = _u_min - u_step;
+
+    GLdouble v =  _v_min;
+    GLdouble u =  _u_min;
+
     for (GLuint i = 0; i < iso_line_count; i++)
     {
-        u += u_step;
-        (*result)[i] = new GenericCurve3(maximum_order_of_derivatives, div_point_count, usage_flag);
+         u += u_step;
+        (*result)[i] = new GenericCurve3(1, div_point_count, usage_flag);
 
-        GLdouble v_step = (_v_max - _v_min) / (div_point_count - 1);
-        GLdouble v = _v_min - v_step;
         for (GLuint j = 0; j < div_point_count; j++)
         {
             v += v_step;
-            PartialDerivatives pd;
-            if (!CalculatePartialDerivatives(maximum_order_of_derivatives, u, v, pd))
-            {
-                delete result;
-                return nullptr;
-            }
+            PartialDerivatives pd(maximum_order_of_derivatives);
+
+            CalculatePartialDerivatives(maximum_order_of_derivatives, u, v, pd);
+
             for (GLuint d = 0; d <= maximum_order_of_derivatives; d++)
             {
-                (*(*result)[j])(d, j) = pd(d, d);
+                (*(*result)[i])(d, j) = pd(d, 0);
             }
         }
     }
+
     return result;
 }
 
-// homework: destructor
 TensorProductSurface3::~TensorProductSurface3()
 {
     DeleteVertexBufferObjectsOfData();
