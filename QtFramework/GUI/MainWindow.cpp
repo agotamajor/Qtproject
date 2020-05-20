@@ -61,7 +61,7 @@ namespace cagd
         connect(_side_widget->cb_derivative2, SIGNAL(stateChanged(int)), _gl_widget, SLOT(set_d2(int)));
         connect(_side_widget->sb_control_point, SIGNAL(valueChanged(int)), _gl_widget, SLOT(set_control_point_nr(int)));
         connect(_side_widget->dsb_scaling, SIGNAL(valueChanged(double)), _gl_widget, SLOT(set_scale(double)));
-        connect(_side_widget->cb_control_points, SIGNAL(stateChanged(int)), _gl_widget, SLOT(set_control_point(int)));
+        connect(_side_widget->cb_control_points, SIGNAL(stateChanged(int)), _gl_widget, SLOT(set_control_point_cc(int)));
 
 //first order trigonometric surface --------------------------------
         connect(_side_widget->doubleSpinBoxAlpha, SIGNAL(valueChanged(double)), _gl_widget, SLOT(set_selected_alpha(double)));
@@ -72,6 +72,7 @@ namespace cagd
         connect(_side_widget->ySpinBox, SIGNAL(valueChanged(double)), _gl_widget, SLOT(set_patch_point_y(double)));
         connect(_side_widget->zSpinBox, SIGNAL(valueChanged(double)), _gl_widget, SLOT(set_patch_point_z(double)));
         connect(_side_widget->renderNormalCheckBox, SIGNAL(stateChanged(int)), _gl_widget, SLOT(set_normal_render(int)));
+        connect(_side_widget->comboBoxControlPoints, SIGNAL(stateChanged(int)), _gl_widget, SLOT(set_control_point_fot(int)));
 
     }
 

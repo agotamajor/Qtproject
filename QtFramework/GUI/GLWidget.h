@@ -15,8 +15,9 @@
 #include "../Core/TriangulatedMeshes3.h"
 #include "../Cyclic/CyclicCurves3.h"
 #include "../Core/ShaderPrograms.h"
-#include "../FirstOrderTrigonometricPatches3/FirstOrderTrigonometricPatches3.h"
-#include "../FirstOrderTrigonometricPatches3/CompositeFirstOrderTrigonometricPatches3.h"
+#include "../FirstOrderTrigonometric/FirstOrderTrigonometricArc3.h"
+#include "../FirstOrderTrigonometric/FirstOrderTrigonometricPatches3.h"
+#include "../FirstOrderTrigonometric/CompositeFirstOrderTrigonometricPatches3.h"
 
 namespace cagd
 {
@@ -46,6 +47,7 @@ namespace cagd
         int material;
         int light;
         int nrshader;
+        DirectionalLight *dl;
         ShaderProgram _shader_two_sided, _shader_directional, _shader_reflection, _shader_toon;
 
 // cyclic curve ----------------------------
@@ -53,8 +55,8 @@ namespace cagd
         int _curve = 0;
         bool _d1 = false;
         bool _d2 = false;
-        bool _control_point = false;
-        GLuint div_point_count = 100;
+        bool _control_points_cc = false;
+        GLuint div_point_count = 1;
 
         CyclicCurve3* _cc[2];
         GenericCurve3* _image_of_cc[2];
@@ -72,11 +74,15 @@ namespace cagd
         double point_x;
         double point_y;
         double point_z;
+        bool control_points_fot=false;
         int normal_render;
-        GLenum _render_mode;
 
+        //arc
+        FirstOrderTrigonometricArc3* p;
+        GenericCurve3* _image_of_fot;
+
+        //patch
         CompositeFirstOrderTrigonometricPatches3* _compsurface;
-        TriangulatedMesh3 *_after_interpolation, *_before_interpolation;
         FirstOrderTrigonometricPatches3 _patch;
 
     public:
@@ -111,19 +117,23 @@ namespace cagd
         void loadModels();
         void loadShaders();
         void loadFOTPatch();
+        void loadFOTArc();
 
 //drawing, rendering ----------------------------------------
         void paintCyclicCurves(int nr);
         void paintModels();
         void paintFOTPatch();
+        void paintFOTArc();
 
 //cyclic curve ----------------------------------------------
         void set_d1(int value);
         void set_d2(int value);
         void set_scale(double value);
-        void set_control_point(int value);
+        void set_control_point_cc(int value);
         void set_control_point_nr(int value);
         void set_curve(int value);
+
+        void deleteCyclicCurve();
 
 //first order trigonometric surface ------------------------
         void set_selected_alpha(double value);
@@ -134,9 +144,12 @@ namespace cagd
         void set_patch_point_y(double value);
         void set_patch_point_z(double value);
         void set_normal_render(int state);
+        void set_control_point_fot(int value);
 
     private:
-
+        GLuint xpress, xrelease, ypress, yrelease;
+        void mousePressEvent(QMouseEvent *event);
+        void mouseReleaseEvent(QMouseEvent *event);
 
     };
 }

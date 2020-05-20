@@ -5,7 +5,7 @@ using namespace cagd;
 using namespace std;
 
 TensorProductSurface3::PartialDerivatives::PartialDerivatives(GLuint maximum_order_of_derivatives):
-        TriangularMatrix<DCoordinate3>(maximum_order_of_derivatives+1)
+    TriangularMatrix<DCoordinate3>(maximum_order_of_derivatives+1)
 {
 }
 
@@ -265,7 +265,7 @@ GLboolean TensorProductSurface3::UpdateDataForInterpolation(const RowMatrix<GLdo
     }
 
     if (!v_collocation_matrix.PerformLUDecomposition())
-            return GL_FALSE;
+        return GL_FALSE;
 
     // 3:   for all fixed j in {0, 1,..., column_count} determine control points
     //
@@ -307,55 +307,55 @@ void TensorProductSurface3::DeleteVertexBufferObjectsOfData()
 GLboolean TensorProductSurface3::UpdateVertexBufferObjectsOfData(GLenum usage_flag)
 {
     GLuint row_count = _data.GetRowCount();
-        GLuint column_count = _data.GetColumnCount();
+    GLuint column_count = _data.GetColumnCount();
 
-        if (!row_count || !column_count)
-            return GL_FALSE;
+    if (!row_count || !column_count)
+        return GL_FALSE;
 
-        if (usage_flag != GL_STREAM_DRAW  && usage_flag != GL_STREAM_READ  && usage_flag != GL_STREAM_COPY
-         && usage_flag != GL_DYNAMIC_DRAW && usage_flag != GL_DYNAMIC_READ && usage_flag != GL_DYNAMIC_COPY
-         && usage_flag != GL_STATIC_DRAW  && usage_flag != GL_STATIC_READ  && usage_flag != GL_STATIC_COPY)
-            return GL_FALSE;
+    if (usage_flag != GL_STREAM_DRAW  && usage_flag != GL_STREAM_READ  && usage_flag != GL_STREAM_COPY
+            && usage_flag != GL_DYNAMIC_DRAW && usage_flag != GL_DYNAMIC_READ && usage_flag != GL_DYNAMIC_COPY
+            && usage_flag != GL_STATIC_DRAW  && usage_flag != GL_STATIC_READ  && usage_flag != GL_STATIC_COPY)
+        return GL_FALSE;
 
+    DeleteVertexBufferObjectsOfData();
+
+    glGenBuffers(1, &_vbo_data);
+    if (!_vbo_data)
+        return GL_FALSE;
+
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo_data);
+    glBufferData(GL_ARRAY_BUFFER, row_count * column_count * 3 * sizeof(GLfloat), 0, usage_flag);
+
+    GLfloat *coordinate = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+    if (!coordinate)
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
         DeleteVertexBufferObjectsOfData();
+        return GL_FALSE;
+    }
 
-        glGenBuffers(1, &_vbo_data);
-        if (!_vbo_data)
-            return GL_FALSE;
-
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo_data);
-        glBufferData(GL_ARRAY_BUFFER, row_count * column_count * 3 * sizeof(GLfloat), 0, usage_flag);
-
-        GLfloat *coordinate = (GLfloat*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
-        if (!coordinate)
+    for (GLuint i = 0; i < row_count; ++i)
+    {
+        for (GLuint j = 0; j < column_count; ++j)
         {
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            DeleteVertexBufferObjectsOfData();
-            return GL_FALSE;
-        }
-
-        for (GLuint i = 0; i < row_count; ++i)
-        {
-            for (GLuint j = 0; j < column_count; ++j)
+            for (GLuint c = 0; c < 3; ++c)
             {
-                for (GLuint c = 0; c < 3; ++c)
-                {
-                    *coordinate = (GLfloat)_data(i, j)[c];
-                    ++coordinate;
-                }
+                *coordinate = (GLfloat)_data(i, j)[c];
+                ++coordinate;
             }
         }
+    }
 
-        if (!glUnmapBuffer(GL_ARRAY_BUFFER))
-        {
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            DeleteVertexBufferObjectsOfData();
-            return GL_FALSE;
-        }
-
+    if (!glUnmapBuffer(GL_ARRAY_BUFFER))
+    {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
+        DeleteVertexBufferObjectsOfData();
+        return GL_FALSE;
+    }
 
-        return GL_TRUE;
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    return GL_TRUE;
 }
 
 
@@ -368,10 +368,10 @@ GLboolean TensorProductSurface3::RenderData(GLenum render_mode) const
         return GL_FALSE;
 
     glEnableClientState(GL_VERTEX_ARRAY);
-        glBindBuffer(GL_ARRAY_BUFFER, _vbo_data);
-           glVertexPointer(3, GL_FLOAT, 0, (const GLvoid*)0);
-           glDrawArrays(render_mode, 0, 3 * _data.GetRowCount() * _data.GetColumnCount());
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, _vbo_data);
+    glVertexPointer(3, GL_FLOAT, 0, (const GLvoid*)0);
+    glDrawArrays(render_mode, 0, 3 * _data.GetRowCount() * _data.GetColumnCount());
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glDisableClientState(GL_VERTEX_ARRAY);
 
     return GL_TRUE;
@@ -385,7 +385,7 @@ RowMatrix<GenericCurve3*>* TensorProductSurface3::GenerateUIsoparametricLines(GL
     RowMatrix<GenericCurve3*> *result = new RowMatrix<GenericCurve3*>(iso_line_count);
     if (!result)
     {
-       return nullptr;
+        return nullptr;
     }
 
     GLdouble v =  _v_min;
@@ -393,7 +393,7 @@ RowMatrix<GenericCurve3*>* TensorProductSurface3::GenerateUIsoparametricLines(GL
 
     for (GLuint i = 0; i < iso_line_count; i++)
     {
-         v += v_step;
+        v += v_step;
         (*result)[i] = new GenericCurve3(1, div_point_count, usage_flag);
 
         for (GLuint j = 0; j < div_point_count; j++)
@@ -421,7 +421,7 @@ RowMatrix<GenericCurve3*>* TensorProductSurface3::GenerateVIsoparametricLines(GL
     RowMatrix<GenericCurve3*> *result = new RowMatrix<GenericCurve3*>(iso_line_count);
     if (!result)
     {
-       return nullptr;
+        return nullptr;
     }
 
     GLdouble v =  _v_min;
@@ -429,7 +429,7 @@ RowMatrix<GenericCurve3*>* TensorProductSurface3::GenerateVIsoparametricLines(GL
 
     for (GLuint i = 0; i < iso_line_count; i++)
     {
-         u += u_step;
+        u += u_step;
         (*result)[i] = new GenericCurve3(1, div_point_count, usage_flag);
 
         for (GLuint j = 0; j < div_point_count; j++)

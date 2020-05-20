@@ -229,7 +229,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
@@ -457,6 +457,19 @@
        <string>render normal vectors</string>
       </property>
      </widget>
+     <widget class="QCheckBox" name="comboBoxControlPoints">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>230</y>
+        <width>111</width>
+        <height>20</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Control points</string>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab">
      <attribute name="title">
@@ -569,11 +582,14 @@
         <height>22</height>
        </rect>
       </property>
+      <property name="minimum">
+       <number>1</number>
+      </property>
       <property name="maximum">
-       <number>100</number>
+       <number>30</number>
       </property>
       <property name="value">
-       <number>100</number>
+       <number>1</number>
       </property>
      </widget>
      <widget class="QDoubleSpinBox" name="dsb_scaling">

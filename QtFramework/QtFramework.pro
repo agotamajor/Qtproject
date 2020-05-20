@@ -77,6 +77,9 @@ HEADERS += \
     Core/TriangularFaces.h \
     Core/TriangulatedMeshes3.h \
     Cyclic/CyclicCurves3.h \
+    FirstOrderTrigonometric/CompositeFirstOrderTrigonometricPatches3.h \
+    FirstOrderTrigonometric/FirstOrderTrigonometricArc3.h \
+    FirstOrderTrigonometric/FirstOrderTrigonometricPatches3.h \
     GUI/GLWidget.h \
     GUI/MainWindow.h \
     GUI/SideWidget.h \
@@ -95,6 +98,9 @@ SOURCES += \
     Core/TensorProductSurfaces3.cpp \
     Core/TriangulatedMeshes3.cpp \
     Cyclic/CyclicCurves3.cpp \
+    FirstOrderTrigonometric/CompositeFirstOrderTrigonometricPatches3.cpp \
+    FirstOrderTrigonometric/FirstOrderTrigonometricArc3.cpp \
+    FirstOrderTrigonometric/FirstOrderTrigonometricPatches3.cpp \
     GUI/GLWidget.cpp \
     GUI/MainWindow.cpp \
     GUI/SideWidget.cpp \
