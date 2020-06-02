@@ -3,7 +3,7 @@
 using namespace cagd ;
 
 // alpha - user-defined
-FirstOrderTrigonometricPatches3:: FirstOrderTrigonometricPatches3(GLdouble alpha):
+FirstOrderTrigonometricPatches3:: FirstOrderTrigonometricPatches3(GLdouble alpha, GLuint row_count, GLuint column_count):
     TensorProductSurface3 (0.0, alpha, 0.0, alpha, 4, 4),
     _alpha(alpha)
 {
@@ -28,7 +28,7 @@ GLdouble FirstOrderTrigonometricPatches3::calculateF2(GLdouble t) const
 
 GLdouble FirstOrderTrigonometricPatches3::calculateF2derivative(GLdouble t) const
 {
-    return (sin(_alpha)*(-cos(t-_alpha)+_alpha*sin(t)+cos(t)+cos(_alpha)-1))/((_alpha-sin(_alpha))*(2*sin(_alpha)+(-1)*_alpha*cos(_alpha)-_alpha));
+    return (sin(_alpha)*(-1-cos(_alpha-t)+cos(t)+cos(_alpha)+_alpha*sin(t)))/((_alpha-sin(_alpha))*(2*sin(_alpha)-_alpha+(-1)*_alpha*cos(_alpha)));
 }
 
 GLdouble FirstOrderTrigonometricPatches3::calculateF3(GLdouble t) const

@@ -8,13 +8,15 @@ class FirstOrderTrigonometricPatches3: public TensorProductSurface3
 
 private:
     GLdouble _alpha;
+    GLuint _row_count;
+    GLuint _column_count;
     GLdouble calculateF2(GLdouble t) const;
     GLdouble calculateF2derivative(GLdouble t) const;
     GLdouble calculateF3(GLdouble t) const;
     GLdouble calculateF3derivative(GLdouble t) const;
 
 public:
-    FirstOrderTrigonometricPatches3(GLdouble alpha = 1.0);
+    FirstOrderTrigonometricPatches3(GLdouble alpha = 1.0, GLuint row_count = 4, GLuint column_count = 4);
     void setAlpha(GLdouble alpha);
     void getAlpha(GLdouble alpha) const;
     GLboolean UBlendingFunctionValues (GLdouble u_knot, RowMatrix<GLdouble>& blending_values) const;

@@ -23,26 +23,30 @@ public:
         FirstOrderTrigonometricPatches3*        _patch;
         TriangulatedMesh3*                      _mesh;
         Material*                               _material;
-        ShaderProgram*                          _shader;
         RowMatrix<GenericCurve3*>*              _u_isoparametric_lines;
         RowMatrix<GenericCurve3*>*              _v_isoparametric_lines;
         std::vector<NeighbourRelation>          _neighbours;
-        GLuint                                  _u_div_point_count, _v_div_point_count;
     };
 
 protected:
 
     //controlnet attributes
-    GLuint _controlnet_maxi;
-    GLuint _controlnet_maxj;
+    GLuint _v_iso_line_count, _u_iso_line_count;
+    GLuint _u_div_point_count, _v_div_point_count;
+
 public:
     std::vector<PatchAttributes> _patches;
 
-    CompositeFirstOrderTrigonometricPatches3(GLuint controlnet_maxi = 4, GLuint controlnet_maxj = 4);
+    CompositeFirstOrderTrigonometricPatches3(GLuint u_div_point_count, GLuint v_div_point_count, GLuint u_iso_line_count, GLuint v_iso_line_count);
     CompositeFirstOrderTrigonometricPatches3(const CompositeFirstOrderTrigonometricPatches3& c);
     CompositeFirstOrderTrigonometricPatches3& operator =(const CompositeFirstOrderTrigonometricPatches3& c);
 
-    GLvoid Render(int, bool);
+    GLvoid Render(bool render_normal, bool control_points, bool controlnet, bool ulines, bool vlines, ShaderProgram shader);
+
+    GLvoid setVIsoLineCount(GLuint v_iso_line_count);
+    GLvoid setUIsoLineCount(GLuint u_iso_line_count);
+    GLuint getVIsoLineCount();
+    GLuint getUIsoLineCount();
 
     GLvoid DeletePatch(GLuint index);
     GLvoid setPatch(GLuint index, FirstOrderTrigonometricPatches3* p);
@@ -51,17 +55,10 @@ public:
     GLvoid setMaterial(GLuint index, Material* material);
     Material getMaterial(GLuint index);
 
-    GLvoid setShader(GLuint index, ShaderProgram* shader);
-    ShaderProgram getShader(GLuint index);
-
     GLvoid setMesh(GLuint index, TriangulatedMesh3* mesh);
     TriangulatedMesh3 getMesh(GLuint index);
 
-    GLvoid InsertNewIsolatedPatch(
-            GLdouble alpha,
-            GLdouble x_min,GLdouble x_max,GLdouble y_min, GLdouble y_max,
-            GLuint u_iso_lines, GLuint u_div_point_count,
-            GLuint v_iso_lines, GLuint v_div_point_count);
+    GLvoid InsertNewIsolatedPatch(GLdouble alpha, GLdouble x_min,GLdouble x_max,GLdouble y_min, GLdouble y_max, Material* material=&MatFBGold);
     GLboolean UpdateVertexBufferObject();
     GLboolean DeleteVertexBufferObject();
     GLvoid InsertNewNeighbourPatch(GLdouble alpha, GLuint patch_index, GLuint direction);
